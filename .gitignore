@@ -1,0 +1,19 @@
+node_modules/
+dist/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+
+# Redact Gate runtime data — audit logs may reference sensitive locations,
+# never commit real run output from a local machine.
+.redactgate/
+redactgate-audit.log
+*.audit.log
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
