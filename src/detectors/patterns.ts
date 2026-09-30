@@ -40,7 +40,12 @@ export interface PatternDetector {
 export const patternDetectors: PatternDetector[] = [
   {
     type: "private-key",
-    regex: /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z0-9 ]*PRIVATE KEY-----/g,
+    // The middle wildcard is bounded (rather than an unbounded `[\s\S]*?`)
+    // to avoid quadratic-time backtracking blowup on input containing
+    // repeated/unterminated BEGIN markers, which could otherwise block the
+    // single-threaded proxy's event loop for an extended period. 20000
+    // characters is comfortably larger than any real PEM-encoded key block.
+    regex: /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----[\s\S]{0,20000}?-----END [A-Z0-9 ]*PRIVATE KEY-----/g,
   },
   {
     // Standard (AKIA) and temporary/STS (ASIA) AWS access key IDs.
