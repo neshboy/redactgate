@@ -150,6 +150,15 @@ async function handleRequest(
   const outboundHeaders = filterOutboundHeaders(req.headers);
   outboundHeaders["host"] = upstreamUrl.host;
   outboundHeaders["content-length"] = String(outboundBody.length);
+  if (options.redactResponses) {
+    // The response-redaction path below scans/rewrites the upstream body as
+    // plain UTF-8 text. If we forwarded the client's Accept-Encoding as-is,
+    // upstream could return a gzip/br/deflate-compressed body, which would
+    // be scanned/rewritten as raw bytes - silently missing real secrets
+    // and/or corrupting the response. Force an uncompressed response so the
+    // buffered body is always the actual plaintext being scanned.
+    outboundHeaders["accept-encoding"] = "identity";
+  }
 
   const requestModule = isHttps ? https : http;
 

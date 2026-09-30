@@ -20,7 +20,7 @@ program
   .option("--redact-responses", "Also inspect/redact response bodies from upstream (buffers responses, disables streaming)", false)
   .action((opts: { upstream: string; port: string; host: string; auditLog: string; redactResponses: boolean }) => {
     const port = Number(opts.port);
-    if (!Number.isInteger(port) || port <= 0) {
+    if (!Number.isInteger(port) || port <= 0 || port > 65535) {
       console.error(`Invalid --port: ${opts.port}`);
       process.exitCode = 1;
       return;
